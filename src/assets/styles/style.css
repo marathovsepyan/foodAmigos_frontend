@@ -1,0 +1,23 @@
+.login{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    position: relative;
+}
+.basket{
+    width:30px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.basketCount{
+    position: absolute;
+    top: -5px;
+    color: red;
+    right: -8px;
+}
+
+.error{
+    color:red;
+    text-align:center
+}
