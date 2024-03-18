@@ -4,22 +4,24 @@ import { getAuthThunk, signUpThunk } from "../thunks/auth";
 
 const initialState = {
     success: false,
+    successLogin: false,
     regMessage: "",
     statusCode: 0,
     statusName: "",
     loading: false,
     token: getCookie("token"),
     errors:[],
-    message:''
+    message:'',
+    loginError:"",
   };
   export const AuthSlice = createSlice({
     name: "login",
     initialState,
     reducers: {
-      adminLogout: (state) => {
+       logout: (state) => {
         deleteCookie("token", "");
         state.token = "";
-      },
+      }
     },
     extraReducers: (builder) => {
       builder.addCase(getAuthThunk.pending, (state) => {
@@ -28,13 +30,15 @@ const initialState = {
       builder.addCase(
         getAuthThunk.fulfilled,
         (state, { payload }) => {
-          state.success = true;
-          state.token = payload.data.token;
+          state.successLogin = true;
+          state.token = payload?.token;
           state.loading = false;          
         }
       );
       builder.addCase(getAuthThunk.rejected, (state, { payload }) => {  
         state.errors = payload;
+        state.loginError = payload.data.error
+        state.successLogin = false;
         state.success = false;
         state.loading = false;
       });
@@ -50,12 +54,12 @@ const initialState = {
           state.regMessage = "Your are successfully signed up!!!"
         }
       );
-      builder.addCase(signUpThunk.rejected, (state, { payload }) => {  
-        console.log(payload,"pa")
-        state.message = payload.data.message;
+      builder.addCase(signUpThunk.rejected, (state, { payload }) => {         
+        state.message = payload.data.message; 
         state.success = false;
-        state.loading = false;
+        state.loading = false;       
       });
     },
   });
+  export const { logout } = AuthSlice.actions;
   

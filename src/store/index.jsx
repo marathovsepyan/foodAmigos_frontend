@@ -10,7 +10,7 @@ const store = configureStore({
         products: ProductsSlice.reducer,
         auth: AuthSlice.reducer,
         basket:BasketsSlice.reducer,
-        order:OrdersSlice.reducer
+        order:OrdersSlice.reducer,
     }
 }
 );

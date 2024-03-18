@@ -34,7 +34,7 @@ export const api = axios.create({
 
 const token = getCookie("token");
 export const getProducts = () => {
-    return api.get('products')
+    return api.get('products');
 }
 export const getAuth = (data) => {
     return api.post('tokens', data)

@@ -10,8 +10,7 @@ export const getAuthThunk = createAsyncThunk(
             const response = await getAuth(data);
             setCookie("token", response.data.token, 7);
             return Promise.resolve(response.data);
-        } catch (error) {
-
+        } catch (error) {     
             return rejectWithValue(error.response);
         }
     }

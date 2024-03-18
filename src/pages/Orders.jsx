@@ -3,12 +3,18 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createOrdersThunk, getOrdersThunk } from '../store/thunks/orders';
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
 export default function Orders() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const orderList = useSelector((state) => {
     return state.order.orders;
   })
+
+  const message = useSelector((state) => {
+    return state.order.message;
+})
 
   const isCreated = useSelector((state) => {
     return state.order.isOrderCreated;
@@ -60,18 +66,41 @@ export default function Orders() {
     {
       title: 'Total',
       key: 'total',
-      dataIndex:"total"    
+      dataIndex:"total",
+      render:(_,record)=>{
+        return "$"+ record.total
+      }
+
+     
+    },
+    {
+      title: 'Products',
+      key: 'products',
+      dataIndex:"products" ,
+      render:(_,record)=>{
+       
+         return (
+           record.products.map((item)=>{
+            return <p>{item.name} - ${item.price}</p>
+           })
+         )
+      }   
     },
     {
       title: 'Created',
       key: 'created',
       render: (_, record) => { return moment(record?.created_at).format('MMMM Do YYYY, h:mm:ss a') }
-    }
+    },
+    
 
   ]
 
   return (<>
-    <div>Order</div>
+    <h1>Order</h1>
+    <Button onClick={() => {
+        navigate(-1)
+      }}>Back To Basket</Button>
+    <p className='error'>{message}</p>
     <Form
       name="order"
       initialValues={{ remember: true }}

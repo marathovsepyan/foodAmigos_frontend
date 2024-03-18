@@ -60,7 +60,7 @@ const initialState = {
           }
         );
         builder.addCase(createOrdersThunk.rejected, (state, { payload }) => {
-          state.errors = payload ? payload.errors || [] : [];
+          state.message = payload.error;
           state.success = false;
           state.loading = false;
         });  

@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuthThunk, signUpThunk } from '../store/thunks/auth';
 import basket from "../assets/basket.png";
 import { createBasketThunk, getBasketsThunk } from '../store/thunks/baskets';
-
-
+import { logout } from '../store/slices/auth';
 
 export default function Home() {
 
@@ -43,24 +42,13 @@ export default function Home() {
     const baskets = useSelector((state) => {
         return state.basket.basketList;
     })
+    const successLogin = useSelector((state) => {
+        return state.auth.successLogin;
+    })
 
     const isBasketAdded = useSelector((state) => {
         return state.basket.isAdded;
     })
-
-    useEffect(() => {
-        dispatch(getProductsThunk())
-    }, [])
-
-    useEffect(() => {
-       
-        dispatch(getBasketsThunk());
-    }, [isBasketAdded])
-
-    const onFinish = useCallback((values) => {
-        dispatch(getAuthThunk(values));
-    }, [])
-
     const token = useSelector((state) => {
         return state.auth.token
     })
@@ -69,6 +57,33 @@ export default function Home() {
         return state.auth.message;
     })
 
+    const loginError = useSelector((state) => {
+        return state.auth.loginError;
+    })
+
+    useEffect(() => {
+        dispatch(getProductsThunk())
+    }, [])
+
+    useEffect(() => {
+        if (successLogin) {
+            setVisible(false);
+            dispatch(getProductsThunk())
+        }
+    }, [successLogin, token])
+
+    useEffect(() => {
+
+        dispatch(getBasketsThunk());
+    }, [isBasketAdded])
+
+    const onFinish = (values) => {
+        dispatch(getAuthThunk(values));
+    }
+
+
+
+
     const regMessage = useSelector((state) => {
         return state.auth.regMessage;
     })
@@ -76,9 +91,6 @@ export default function Home() {
     const onFinishSign = (values) => {
         dispatch(signUpThunk(values))
     }
-
-
-
     const columns = [
         {
             title: 'No',
@@ -108,9 +120,10 @@ export default function Home() {
             render: (_, record) => {
                 const isExist = baskets.find(item => (item.product_id === record.id));
                 return (
-                    <Button key={record.id} onClick={() => { dispatch(createBasketThunk({ productId: record.id, count: 1 })) }}>
+                    token && <Button key={record.id} onClick={() => { dispatch(createBasketThunk({ productId: record.id, count: 1 })) }}>
                         {!isExist ? 'Add Basket' : 'Already Added'}
                     </Button>
+
                 );
             }
         },
@@ -120,10 +133,16 @@ export default function Home() {
     return (
         <div>
             <div className="login">
-                <Button onClick={showModalSignUp}>Sign Up</Button>
-                <Button onClick={showModal}>Sign In</Button>
+                {!token ?
+                    <>
+                        <Button onClick={showModalSignUp}>Sign Up</Button>
+                        <Button onClick={showModal}>Sign In</Button>
+                    </>
+                    :
+                    <Button onClick={() => { dispatch(logout()) }}>Logout</Button>
+                }
                 <img src={basket} alt="basket" className="basket" onClick={() => { navigate("/basket") }} />
-                <span className="basketCount">{baskets.length}</span>
+                {token && <span className="basketCount">{baskets.length}</span>}
             </div>
 
             <h1>Products Store</h1>
@@ -138,6 +157,7 @@ export default function Home() {
                 onCancel={handleCancel}
                 footer={null}
             >
+                <p className='error'>{loginError}</p>
                 <Form
                     name="login"
                     initialValues={{ remember: true }}
