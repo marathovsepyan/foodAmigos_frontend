@@ -75,7 +75,7 @@ export default function Home() {
     useEffect(() => {
 
         dispatch(getBasketsThunk());
-    }, [isBasketAdded])
+    }, [isBasketAdded,successLogin])
 
     const onFinish = (values) => {
         dispatch(getAuthThunk(values));
